@@ -11,9 +11,7 @@
     <properties>
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
-        <!-- Версия Aspectj -->
         <aspectj.version>1.9.7</aspectj.version>
-        <!-- Версия Allure -->
         <allure.version>2.25.0</allure.version>
     </properties>
 
@@ -38,19 +36,22 @@
             <artifactId>allure-junit4</artifactId>
             <version>${allure.version}</version>
         </dependency>
-
-        <!-- Модуль взаимодействия Allure и RestAssured -->
         <dependency>
             <groupId>io.qameta.allure</groupId>
-            <artifactId>allure-rest-assured</artifactId>
-            <version>${allure.version}</version>
+            <artifactId>allure-junit4</artifactId>
+            <version>2.25.0</version>
+        </dependency>
+        <dependency>
+            <groupId>io.rest-assured</groupId>
+            <artifactId>rest-assured</artifactId>
+            <version>4.4.0</version>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 
     <build>
         <sourceDirectory>src/main/java</sourceDirectory>
         <plugins>
-            <!-- Настройка плагина maven-compiler-plugin -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
@@ -60,8 +61,6 @@
                     <target>11</target>
                 </configuration>
             </plugin>
-
-            <!-- Настройка плагина jacoco-maven-plugin -->
             <plugin>
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
@@ -81,8 +80,6 @@
                     </execution>
                 </executions>
             </plugin>
-
-            <!-- Настройка плагина maven-surefire-plugin -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
@@ -99,7 +96,6 @@
                         </property>
                     </properties>
                     <systemProperties>
-                        <!-- Папка, в которую будут генерироваться отчёты Allure -->
                         <property>
                             <name>allure.results.directory</name>
                             <value>${project.build.directory}/allure-results</value>
@@ -112,16 +108,9 @@
                         <artifactId>aspectjweaver</artifactId>
                         <version>${aspectj.version}</version>
                     </dependency>
-                    <dependency>
-                        <groupId>org.slf4j</groupId>
-                        <artifactId>slf4j-api</artifactId>
-                        <version>1.7.32</version>
-                    </dependency>
-
                 </dependencies>
             </plugin>
 
-            <!-- Подключение плагина allure-maven для вызова функций Allure с помощью Maven -->
             <plugin>
                 <groupId>io.qameta.allure</groupId>
                 <artifactId>allure-maven</artifactId>

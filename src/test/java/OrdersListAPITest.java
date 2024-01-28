@@ -13,7 +13,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 @DisplayName("Orders API Tests")
-public class OrdersAPITest {
+public class OrdersListAPITest {
 
     private static final String BASE_URI = "https://qa-scooter.praktikum-services.ru/api/v1";
     private static final String ORDERS_ENDPOINT = "/orders";
@@ -24,39 +24,20 @@ public class OrdersAPITest {
     }
 
     @Test
-    @Story("Create Order")
-    @DisplayName("Create Order Test")
-    @Description("Test the creation of an order with different color options")
-    public void createOrderTest() {
-        String orderId = createOrder();
-        assertOrderCreation(orderId);
+    @Story("Get Orders List")
+    @DisplayName("Get Orders List Test")
+    @Description("Test the retrieval of the orders list")
+    public void getOrdersListTest() {
+        assertOrdersList();
     }
 
-    @Step("Create Order")
-    private String createOrder() {
-        String requestBody = "{\n" +
-                "    \"firstName\": \"Naruto\",\n" +
-                "    \"lastName\": \"Uchiha\",\n" +
-                "    \"address\": \"Konoha, 142 apt.\",\n" +
-                "    \"metroStation\": 4,\n" +
-                "    \"phone\": \"+7 800 355 35 35\",\n" +
-                "    \"rentTime\": 5,\n" +
-                "    \"deliveryDate\": \"2020-06-06\",\n" +
-                "    \"comment\": \"Saske, come back to Konoha\",\n" +
-                "    \"color\": [\"BLACK\", \"GREY\"]\n" +
-                "}";
-
+    @Step("Get Orders List")
+    private void assertOrdersList() {
         Response response = given()
                 .contentType(ContentType.JSON)
-                .body(requestBody)
-                .post(ORDERS_ENDPOINT);
+                .get(ORDERS_ENDPOINT);
 
-        assertEquals("Unexpected status code", 201, response.getStatusCode());
-        assertTrue("Track information not found in the response", response.getBody().asString().contains("track"));
-        return response.jsonPath().getString("id");
-    }
-
-    @Step("Verify Order Creation")
-    private void assertOrderCreation(String orderId) {
+        assertEquals("Unexpected status code", 200, response.getStatusCode());
+        assertTrue("Orders list not found in the response", response.getBody().asString().contains("orders"));
     }
 }
