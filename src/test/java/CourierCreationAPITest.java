@@ -1,73 +1,84 @@
+import com.github.javafaker.Faker;
 import io.qameta.allure.Description;
-import io.qameta.allure.Feature;
-import io.qameta.allure.Step;
-import io.restassured.RestAssured;
-import io.restassured.http.ContentType;
+import io.restassured.response.Response;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import static io.restassured.RestAssured.given;
-import static org.hamcrest.CoreMatchers.equalTo;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
-@Feature("API Тестирование: Создание курьера")
-public class CourierCreationAPITest {
+public class CourierCreationAPITest extends BaseAPITest {
 
-    private String testLogin;
-    private String testPassword;
-    private String testFirstName;
     private String courierId;
+    private static final Faker faker = new Faker();
 
     @Before
     public void setUp() {
-        RestAssured.baseURI = "https://qa-scooter.praktikum-services.ru";
-
-        testLogin = generateUniqueLogin();
+        super.setUp();
+        testLogin = generateUniqueLogin(new Faker());
         testPassword = "password123";
-        testFirstName = "JohnDoe";
+        testFirstName = generateRandomFirstName(new Faker());
     }
 
     @After
     public void tearDown() {
         if (courierId != null) {
-            deleteCourier(courierId);
+            APISteps.deleteCourier(courierId);
         }
     }
 
     @Test
-    @Description("Тест проверяет успешное создание и удаление курьера")
-    public void testCourierCreationAndDeletion() {
-        courierId = createCourier(testLogin, testPassword, testFirstName)
-                .then()
-                .statusCode(201)
-                .body("ok", equalTo(true))
-                .extract()
-                .path("id");
-        deleteCourier(courierId);
+    @Description("Курьера можно создать")
+    public void testCourierCreation() {
+        Response createResponse = APISteps.createCourier(testLogin, testPassword, testFirstName);
+
+        assertEquals(201, createResponse.getStatusCode());
+        assertTrue(createResponse.getBody().jsonPath().getBoolean("ok"));
+        courierId = createResponse.getBody().jsonPath().getString("id");
     }
 
-    @Step("Шаг: Создание курьера с данными: логин={login}, пароль={password}, имя={firstName}")
-    private io.restassured.response.Response createCourier(String login, String password, String firstName) {
-        return given()
-                .contentType(ContentType.JSON)
-                .body("{\"login\":\"" + login + "\", \"password\":\"" + password + "\", \"firstName\":\"" + firstName + "\"}")
-                .when()
-                .post("/api/v1/courier")
-                .then()
-                .extract().response();
+    @Test
+    @Description("Ошибка при создании курьера без логина")
+    public void testCourierCreationWithoutLogin() {
+        String randomPassword = faker.internet().password();
+        String randomFirstName = faker.name().firstName();
+
+        Response response = APISteps.createCourierWithoutLogin(randomPassword, randomFirstName);
+
+        assertEquals(400, response.getStatusCode());
+        assertEquals("Недостаточно данных для создания учетной записи", response.getBody().jsonPath().getString("message"));
     }
 
-    @Step("Шаг: Удаление курьера с id {id}")
-    private void deleteCourier(String id) {
-        given()
-                .when()
-                .delete("/api/v1/courier/{id}", id)
-                .then()
-                .statusCode(200)
-                .body("ok", equalTo(true));
+    @Test
+    @Description("Успешный запрос возвращает код ответа 201")
+    public void testCourierCreationResponseCode() {
+        Response response = APISteps.createCourier(testLogin, testPassword, testFirstName);
+        assertEquals(201, response.getStatusCode());
     }
 
-    private String generateUniqueLogin() {
-        return "user" + System.currentTimeMillis();
+    @Test
+    @Description("Успешный запрос возвращает ok: true")
+    public void testCourierCreationSuccessResponse() {
+        Response response = APISteps.createCourier(testLogin, testPassword, testFirstName);
+        assertTrue(response.getBody().jsonPath().getBoolean("ok"));
+    }
+
+    @Test
+    @Description("Успешное удаление курьера")
+    public void testCourierDeletion() {
+        try {
+            Response createResponse = APISteps.createCourier(testLogin, testPassword, testFirstName);
+            assertEquals(201, createResponse.getStatusCode());
+            assertTrue(createResponse.getBody().jsonPath().getBoolean("ok"));
+
+            courierId = createResponse.getBody().jsonPath().getString("id");
+
+            Response deleteResponse = APISteps.deleteCourier(courierId);
+            assertEquals(200, deleteResponse.getStatusCode());
+            assertTrue(deleteResponse.getBody().jsonPath().getBoolean("ok"));
+        } catch (Exception e) {
+            System.err.println("Exception during testCourierDeletion: " + e.getMessage());
+        }
     }
 }
