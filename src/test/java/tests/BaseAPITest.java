@@ -1,8 +1,11 @@
+package tests;
+
 import com.github.javafaker.Faker;
 import io.qameta.allure.Step;
 import io.qameta.allure.junit4.DisplayName;
 import io.restassured.RestAssured;
 import org.junit.Before;
+import steps.APISteps;
 
 @DisplayName("Base API Tests")
 public class BaseAPITest {

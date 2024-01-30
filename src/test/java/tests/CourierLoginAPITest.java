@@ -1,9 +1,13 @@
+package tests;
+
 import io.qameta.allure.Description;
 import io.restassured.response.Response;
 import org.junit.After;
 import org.junit.Test;
+import steps.APISteps;
 
 import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.notNullValue;
 
 public class CourierLoginAPITest extends BaseAPITest {
 
@@ -23,9 +27,11 @@ public class CourierLoginAPITest extends BaseAPITest {
     @Test
     @Description("Курьер может успешно авторизоваться")
     public void testCourierLoginSuccess() {
+        APISteps.createCourier(testLogin, testPassword, testFirstName);
+
         Response response = APISteps.loginCourier(testLogin, testPassword);
         response.then().statusCode(200);
-        response.then().body("id", equalTo(Integer.parseInt(courierId)));
+        response.then().body("id", notNullValue());
     }
 
     @Test

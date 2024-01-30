@@ -1,8 +1,11 @@
+package tests;
+
 import io.qameta.allure.Description;
 import io.qameta.allure.Story;
 import io.qameta.allure.junit4.DisplayName;
 import io.restassured.response.Response;
 import org.junit.Test;
+import steps.APISteps;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -18,8 +21,7 @@ public class OrdersListAPITest extends BaseAPITest {
     @Description("Тест на получение списка заказов")
     public void getOrdersListTest() {
         Response response = APISteps.getOrdersList();
-
-        assertEquals("Неожиданный статус-код", 200, response.getStatusCode());
-        assertTrue("Список заказов не найден в ответе", response.getBody().asString().contains("orders"));
+        assertEquals(200, response.getStatusCode());
+        assertTrue(response.getBody().asString().contains("orders"));
     }
 }
