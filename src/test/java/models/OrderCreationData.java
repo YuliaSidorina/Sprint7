@@ -2,16 +2,16 @@ import java.util.List;
 
 public class OrderCreationData {
 
-    private String firstName;
-    private String lastName;
-    private String address;
-    private int metroStation;
-    private String phone;
-    private int rentTime;
-    private String deliveryDate;
-    private String comment;
-    private List<String> color;
-    private int statusCode;
+    public String firstName;
+    public String lastName;
+    public String address;
+    public int metroStation;
+    public String phone;
+    public int rentTime;
+    public String deliveryDate;
+    public String comment;
+    public List<String> color;
+    public int statusCode;
 
     public OrderCreationData() {
     }

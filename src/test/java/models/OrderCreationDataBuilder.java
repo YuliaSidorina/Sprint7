@@ -2,7 +2,7 @@ import java.util.List;
 
 public class OrderCreationDataBuilder {
 
-    private OrderCreationData orderCreationData;
+    public final OrderCreationData orderCreationData;
 
     public OrderCreationDataBuilder() {
         this.orderCreationData = new OrderCreationData();
