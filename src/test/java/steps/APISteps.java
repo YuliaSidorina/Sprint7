@@ -41,16 +41,18 @@ public class APISteps {
         } catch (IOException e) {
             throw new RuntimeException("Error converting OrderCreationData to JSON", e);
         } catch (Exception e) {
-            System.out.println("Ошибка при соединении с сервером: " + e.getMessage());
             Assume.assumeNoException("Тест пропущен из-за ошибки при соединении с сервером", e);
             return null;
         }
     }
 
-
     @Step("Шаг: Создание курьера с данными: логин={login}, пароль={password}, имя={firstName}")
     public static Response createCourier(String login, String password, String firstName) {
         try {
+            if (login != null && courierExists(login)) {
+                throw new RuntimeException("Курьер с таким логином уже существует");
+            }
+
             Map<String, String> requestBodyMap = new HashMap<>();
             if (login != null) {
                 requestBodyMap.put("login", login);
@@ -169,5 +171,37 @@ public class APISteps {
                 .statusCode(200)
                 .body("ok", equalTo(true))
                 .extract().response();
+    }
+
+    @Step("Шаг: Проверка существования курьера по логину: логин={login}")
+    public static boolean courierExists(String login) {
+        try {
+            Response response = getCourierByLogin(login);
+
+            if (response.statusCode() == 200) {
+                return true;
+            } else if (response.statusCode() == 404) {
+                return false;
+            } else {
+                throw new RuntimeException("Ошибка при проверке существования курьера по логину. Статус: " + response.statusCode());
+            }
+
+        } catch (Exception e) {
+            throw new RuntimeException("Ошибка при проверке существования курьера по логину", e);
+        }
+    }
+
+    @Step("Шаг: Получение курьера по логину: логин={login}")
+    public static Response getCourierByLogin(String login) {
+        try {
+            return given()
+                    .pathParam("login", login)
+                    .when()
+                    .get("/api/v1/courier/{login}")
+                    .then()
+                    .extract().response();
+        } catch (Exception e) {
+            throw new RuntimeException("Ошибка при получении курьера по логину", e);
+        }
     }
 }

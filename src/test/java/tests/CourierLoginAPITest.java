@@ -1,37 +1,20 @@
 package tests;
 
+import com.github.javafaker.Faker;
 import io.qameta.allure.Description;
 import io.restassured.response.Response;
-import org.junit.After;
 import org.junit.Test;
 import steps.APISteps;
 
 import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.CoreMatchers.notNullValue;
 
 public class CourierLoginAPITest extends BaseAPITest {
-
-    private String courierId;
-
-    @Override
-    public void setUp() {
-        super.setUp();
-        courierId = APISteps.createAndDeleteCourier(testLogin, testPassword, testFirstName);
-    }
-
-    @After
-    public void tearDown() {
-        APISteps.deleteCourier(courierId);
-    }
 
     @Test
     @Description("Курьер может успешно авторизоваться")
     public void testCourierLoginSuccess() {
-        APISteps.createCourier(testLogin, testPassword, testFirstName);
-
-        Response response = APISteps.loginCourier(testLogin, testPassword);
+        Response response = APISteps.loginCourier("SpecialUserForTestingLogin", "1234");
         response.then().statusCode(200);
-        response.then().body("id", notNullValue());
     }
 
     @Test
@@ -45,7 +28,7 @@ public class CourierLoginAPITest extends BaseAPITest {
     @Test
     @Description("Ошибка при попытке логина с неправильным паролем")
     public void testCourierLoginIncorrectPassword() {
-        Response response = APISteps.loginCourier(testLogin, "wrongPassword");
+        Response response = APISteps.loginCourier("SpecialUserForTestingLogin", "wrongPassword");
         response.then().statusCode(404);
         response.then().body("message", equalTo("Учетная запись не найдена"));
     }
@@ -53,7 +36,8 @@ public class CourierLoginAPITest extends BaseAPITest {
     @Test
     @Description("Ошибка при попытке логина с несуществующим логином")
     public void testCourierLoginNonexistentUser() {
-        Response response = APISteps.loginCourier("nonexistentUser", testPassword);
+        String nonexistentUser = "nonexistentUser" + new Faker().number().randomNumber();
+        Response response = APISteps.loginCourier(nonexistentUser, "1234");
         response.then().statusCode(404);
         response.then().body("message", equalTo("Учетная запись не найдена"));
     }

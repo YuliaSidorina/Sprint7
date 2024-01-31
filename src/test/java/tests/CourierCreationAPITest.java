@@ -20,7 +20,7 @@ public class CourierCreationAPITest extends BaseAPITest {
     public void setUp() {
         super.setUp();
         testLogin = generateUniqueLogin(new Faker());
-        testPassword = "password123";
+        testPassword = generatePassword(new Faker());
         testFirstName = generateRandomFirstName(new Faker());
     }
 

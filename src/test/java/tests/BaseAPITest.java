@@ -2,12 +2,10 @@ package tests;
 
 import com.github.javafaker.Faker;
 import io.qameta.allure.Step;
-import io.qameta.allure.junit4.DisplayName;
 import io.restassured.RestAssured;
 import org.junit.Before;
 import steps.APISteps;
 
-@DisplayName("Base API Tests")
 public class BaseAPITest {
 
     protected static final String BASE_URI = "https://qa-scooter.praktikum-services.ru";
@@ -20,7 +18,7 @@ public class BaseAPITest {
         RestAssured.baseURI = BASE_URI;
         Faker faker = new Faker();
         testLogin = generateUniqueLogin(faker);
-        testPassword = "password123";
+        testPassword = generatePassword(faker);
         testFirstName = generateRandomFirstName(faker);
         createTestCourier();
     }
@@ -40,4 +38,8 @@ public class BaseAPITest {
         return faker.name().firstName();
     }
 
+    @Step("Шаг: Генерация пароля")
+    protected String generatePassword(Faker faker) {
+        return faker.internet().password();
+    }
 }
