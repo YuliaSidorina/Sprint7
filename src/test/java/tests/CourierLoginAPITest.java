@@ -8,7 +8,7 @@ import steps.APISteps;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 
-public class CourierLoginAPITest extends BaseAPITest {
+public class CourierLoginAPITest extends BaseCourierAPITest {
 
     @Test
     @Description("Курьер может успешно авторизоваться")

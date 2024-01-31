@@ -19,7 +19,7 @@ public class APISteps {
     private static final ObjectMapper objectMapper = new ObjectMapper();
 
     @Step("Шаг: Получение списка заказов")
-    public static Response getOrdersList() {
+    public static Response getOrdersList(Integer courierId, String nearestStation, Integer limit, Integer page) {
         return given()
                 .contentType(ContentType.JSON)
                 .get("/orders")

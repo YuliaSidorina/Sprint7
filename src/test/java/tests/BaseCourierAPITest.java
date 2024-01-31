@@ -6,7 +6,8 @@ import io.restassured.RestAssured;
 import org.junit.Before;
 import steps.APISteps;
 
-public class BaseAPITest {
+
+public class BaseCourierAPITest {
 
     protected static final String BASE_URI = "https://qa-scooter.praktikum-services.ru";
     protected String testLogin;

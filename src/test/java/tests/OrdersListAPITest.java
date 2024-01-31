@@ -1,27 +1,54 @@
 package tests;
 
-import io.qameta.allure.Description;
-import io.qameta.allure.Story;
-import io.qameta.allure.junit4.DisplayName;
-import io.restassured.response.Response;
+import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
 import steps.APISteps;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Random;
 
-@DisplayName("Тесты API Заказов")
-public class OrdersListAPITest extends BaseAPITest {
+@RunWith(Parameterized.class)
+public class OrdersListAPITest extends BaseOrderAPITest {
 
-    private static final String ORDERS_ENDPOINT = "/api/v1/orders";
+    private final Integer courierId;
+    private final String nearestStation;
+    private final Integer limit;
+    private final Integer page;
+
+    @Before
+    public void setUp() {
+        super.setUp();
+    }
+
+    public OrdersListAPITest(Integer courierId, String nearestStation, Integer limit, Integer page) {
+        this.courierId = (courierId != null) ? courierId : generateRandomCourierId();
+        this.nearestStation = (nearestStation != null) ? nearestStation : generateRandomStation();
+        this.limit = limit;
+        this.page = page;
+    }
+
+    private static int generateRandomCourierId() {
+        return 100000 + new Random().nextInt(900000);
+    }
+
+    private static String generateRandomStation() {
+        return String.valueOf(1 + new Random().nextInt(237));
+    }
+
+    @Parameterized.Parameters
+    public static Collection<Object[]> data() {
+        return Arrays.asList(new Object[][]{
+                {null, null, null, null},
+                {generateRandomCourierId(), null, null, null},
+                {generateRandomCourierId(), generateRandomStation(), null, null}
+        });
+    }
 
     @Test
-    @Story("Получение списка заказов")
-    @DisplayName("Тест получения списка заказов")
-    @Description("Тест на получение списка заказов")
-    public void getOrdersListTest() {
-        Response response = APISteps.getOrdersList();
-        assertEquals(200, response.getStatusCode());
-        assertTrue(response.getBody().asString().contains("orders"));
+    public void testOrdersList() {
+        APISteps.getOrdersList(courierId, nearestStation, limit, page);
     }
 }

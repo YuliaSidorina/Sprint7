@@ -11,7 +11,7 @@ import steps.APISteps;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-public class CourierCreationAPITest extends BaseAPITest {
+public class CourierCreationAPITest extends BaseCourierAPITest {
 
     private String courierId;
     private static final Faker faker = new Faker();
